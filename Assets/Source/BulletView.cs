@@ -10,18 +10,20 @@ public class BulletView : MonoBehaviour {
 
     private Vector3 mDirection = Vector3.zero;
 
+    public BasicEvents.Void onDestroyed { get; } = new BasicEvents.Void();
+
     private void FixedUpdate() {
         Vector3 movement = mDirection * Time.fixedDeltaTime * mSpeed;
         transform.localPosition += movement;
 
         if (Vector3.Distance(Vector3.zero, transform.position) > mActiveRadius) {
-            gameObject.SetActive(false);
+            Destroy();
         }
     }
 
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.layer == LayerMask.NameToLayer("Asteroid")) {
-            gameObject.SetActive(false);
+            Destroy();
         }
     }
 
@@ -30,5 +32,14 @@ public class BulletView : MonoBehaviour {
         mDirection = direction;
         
         gameObject.SetActive(true);
+    }
+
+    public void Destroy() {
+        if (gameObject.activeInHierarchy) {
+            gameObject.SetActive(false);
+            onDestroyed.Invoke();
+
+            onDestroyed.RemoveAllListeners();
+        }
     }
 }

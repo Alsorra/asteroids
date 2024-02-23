@@ -4,26 +4,31 @@ using UnityEngine;
 
 public class ObjectContainer {
     private Transform mParent = null;
+    private GameObject mPrefab = null;
 
-    private List<GameObject> mObjects = new List<GameObject>();
+    private List<GameObject> mAvailableObject = new List<GameObject>();
+    private List<GameObject> mLockedObjects = new List<GameObject>();
 
-    public ObjectContainer(Transform parent, GameObject firstObject) {
+    public ObjectContainer(Transform parent, GameObject prefab) {
         mParent = parent;
-
-        mObjects.Add(firstObject);
+        mPrefab = prefab;
     }
 
-    public GameObject GetFreeObject() {
-        foreach (GameObject gameObject in mObjects) {
-            if (!gameObject.activeInHierarchy) {
-                return gameObject;
-            }
+    public GameObject GetAvailableObject() {
+       GameObject freeObject = mAvailableObject.Count == 0 ?
+            GameObject.Instantiate(mPrefab, mParent.transform) :
+            mAvailableObject[0];
+
+        mAvailableObject.Remove(freeObject);
+        mLockedObjects.Add(freeObject);
+
+        return freeObject;
+    }
+
+    public void SetObjectAvailable(GameObject lockedObject) {
+        if (mLockedObjects.Contains(lockedObject)) {
+            mLockedObjects.Remove(lockedObject);
+            mAvailableObject.Add(lockedObject);
         }
-
-        GameObject newGameObject = GameObject.Instantiate(mObjects[0], mParent.transform);
-
-        mObjects.Add(newGameObject);
-
-        return newGameObject;
     }
 }

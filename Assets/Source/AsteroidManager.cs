@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class AsteroidManager : MonoBehaviour {
 
+    [Header("Resources")]
+    [SerializeField]
+    private GameObject mAsteroidPrefab = null;
+
+    [Header("Data")]
     [SerializeField]
     private int[] mAsteroidSizeHealth = new int[] { 25, 50, 100, 200 };
 
@@ -21,15 +26,10 @@ public class AsteroidManager : MonoBehaviour {
     private float mSpawnTime = 5.0f;
     private float mSpawnCounter = 0.0f;
 
-    private List<Asteroid> mAsteroids = new List<Asteroid>();
-
     private ObjectContainer mAsteroidViews = null;
 
     private void Awake() {
-        AsteroidView asteroidView = GetComponentInChildren<AsteroidView>(true);
-        Debug.Assert(asteroidView != null);
-
-        mAsteroidViews = new ObjectContainer(transform, asteroidView.gameObject);
+        mAsteroidViews = new ObjectContainer(transform, mAsteroidPrefab);
     }
 
     private void Update() {
@@ -53,23 +53,27 @@ public class AsteroidManager : MonoBehaviour {
     private void SpawnAsteroid(Vector3 spawnPosition, Vector3 direction, int size) {
         float speed = mAsteroidSpeed * (mAsteroidSpeed / (size + 1));
 
-        Asteroid asteroid = new Asteroid(size, mAsteroidSizeHealth[size]);
-        mAsteroids.Add(asteroid);
+        AsteroidView asteroidView = mAsteroidViews.GetAvailableObject().GetComponent<AsteroidView>();
+        asteroidView.Setup(spawnPosition, direction * 100.0f, size, mAsteroidSizeHealth[size]);
 
-        asteroid.onDestroyed.AddListener(() => {
-            OnAsteroidDestroyed(asteroid);
+        asteroidView.onDestroyed.AddListener(() => {
+            OnAsteroidDestroyed(asteroidView);
         });
-
-        AsteroidView asteroidView = mAsteroidViews.GetFreeObject().GetComponent<AsteroidView>();
-        asteroidView.Setup(asteroid, spawnPosition, direction * 100.0f);
     }
 
-    private void OnAsteroidDestroyed(Asteroid asteroid) {
-        mAsteroids.Remove(asteroid);
+    private void OnAsteroidDestroyed(AsteroidView asteroid) {
+        mAsteroidViews.SetObjectAvailable(asteroid.gameObject);
 
-        /*if (asteroid.size > 0) {
-            float directionAngle = Mathf.Acos(-asteroid.direction.x);
+        if (asteroid.size > 0) {
+            Vector3 position = asteroid.transform.position;
+            Vector3 velocity = asteroid.velocity;
+            int size = asteroid.size;
+
+            asteroid = null;
+
+            float directionAngle = Mathf.Acos(-velocity.x);
             float directionAngleDifference = Mathf.Deg2Rad * 25.0f;
+
             float[] newDirections = new float[] {
                 directionAngle + directionAngleDifference,
                 directionAngle - directionAngleDifference
@@ -77,9 +81,9 @@ public class AsteroidManager : MonoBehaviour {
 
             foreach (float angle in newDirections) {
                 Vector3 direction = CircleEdgePoint(1.0f, angle).normalized * -1.0f;
-                SpawnAsteroid(asteroid.worldPosition, direction, asteroid.size - 1);
+                SpawnAsteroid(position, direction, size - 1);
             }
-        }*/
+        }
     }
 
     private void OnDrawGizmos() {

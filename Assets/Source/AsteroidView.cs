@@ -1,40 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class AsteroidView : MonoBehaviour {
 
-    private Asteroid mAsteroid = null;
     private Rigidbody mRigidbody = null;
 
+    public int size { get; private set; } = 0;
+    public int health { get; private set; } = 0;
+
+    public BasicEvents.Void onDestroyed { get; } = new BasicEvents.Void();
+
+    public Vector3 velocity { get { return mRigidbody ? mRigidbody.velocity : Vector3.zero; } }
+
     private void OnTriggerEnter(Collider other) {
-        if (mAsteroid != null) {
-            mAsteroid.OnCollision(other.gameObject.layer);
-        } else {
-            OnAsteroidDestroyed();
+        if (other.gameObject.layer == LayerMask.NameToLayer("Bullet")) {
+            health -= 10;
+
+            if (health <= 0) {
+                Destroy();
+            }
         }
     }
 
-    public void Setup(Asteroid asteroid, Vector3 position, Vector3 startingForce) {
+    public void Setup(Vector3 position, Vector3 startingForce, int size, int health) {
         gameObject.SetActive(true);
 
-        mAsteroid = asteroid;
-        mAsteroid.onDestroyed.AddListener(OnAsteroidDestroyed);
+        this.size = size;
+        this.health = health;
 
         transform.position = position;
-        transform.localScale = Vector3.one * (asteroid.size + 1) * 0.25f;
+        transform.localScale = Vector3.one * (size + 1) * 0.25f;
 
         if (mRigidbody == null) {
             mRigidbody = GetComponent<Rigidbody>();
         }
 
         mRigidbody.velocity = Vector3.zero;
-        mRigidbody.mass = 2 * (asteroid.size + 1);
+        mRigidbody.mass = 2 * (size + 1);
         mRigidbody.AddForce(startingForce, ForceMode.Force);
     }
 
-    private void OnAsteroidDestroyed() {
-        gameObject.SetActive(false);
-        mAsteroid = null;
+    private void Destroy() {
+        if (gameObject.activeInHierarchy) {
+            gameObject.SetActive(false);
+            onDestroyed.Invoke();
+
+            onDestroyed.RemoveAllListeners();
+        }
     }
 }
