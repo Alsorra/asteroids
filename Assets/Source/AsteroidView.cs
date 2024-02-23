@@ -5,12 +5,18 @@ using UnityEngine;
 
 public class AsteroidView : MonoBehaviour {
 
+    public enum DestructionType {
+        HitShip = 0,
+        OutOfBounds = 1,
+        OutOfHealth = 2
+    }
+
     private Rigidbody2D mRigidbody = null;
 
     public int size { get; private set; } = 0;
     public int health { get; private set; } = 0;
 
-    public BasicEvents.Void onDestroyed { get; } = new BasicEvents.Void();
+    public BasicEvents.Integer onDestroyed { get; } = new BasicEvents.Integer();
 
     public Vector3 velocity { get { return mRigidbody ? mRigidbody.velocity : Vector3.zero; } }
 
@@ -19,8 +25,10 @@ public class AsteroidView : MonoBehaviour {
             health -= 10;
 
             if (health <= 0) {
-                Destroy();
+                Destroy(DestructionType.OutOfHealth);
             }
+        } else if (other.gameObject.layer == LayerMask.NameToLayer("Ship")) {
+            Destroy(DestructionType.OutOfBounds);
         }
     }
 
@@ -42,10 +50,10 @@ public class AsteroidView : MonoBehaviour {
         mRigidbody.AddForce(startingForce, ForceMode2D.Force);
     }
 
-    private void Destroy() {
+    private void Destroy(DestructionType type) {
         if (gameObject.activeInHierarchy) {
             gameObject.SetActive(false);
-            onDestroyed.Invoke();
+            onDestroyed.Invoke((int)type);
 
             onDestroyed.RemoveAllListeners();
         }

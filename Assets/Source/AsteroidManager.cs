@@ -56,15 +56,15 @@ public class AsteroidManager : MonoBehaviour {
         AsteroidView asteroidView = mAsteroidViews.GetAvailableObject().GetComponent<AsteroidView>();
         asteroidView.Setup(spawnPosition, direction * 100.0f, size, mAsteroidSizeHealth[size]);
 
-        asteroidView.onDestroyed.AddListener(() => {
-            OnAsteroidDestroyed(asteroidView);
+        asteroidView.onDestroyed.AddListener((int destructionType) => {
+            OnAsteroidDestroyed(asteroidView, (AsteroidView.DestructionType)destructionType);
         });
     }
 
-    private void OnAsteroidDestroyed(AsteroidView asteroid) {
+    private void OnAsteroidDestroyed(AsteroidView asteroid, AsteroidView.DestructionType type) {
         mAsteroidViews.SetObjectAvailable(asteroid.gameObject);
 
-        if (asteroid.size > 0) {
+        if (asteroid.size > 0 && type == AsteroidView.DestructionType.OutOfHealth) {
             Vector3 position = asteroid.transform.position;
             Vector3 velocity = asteroid.velocity;
             int size = asteroid.size;
