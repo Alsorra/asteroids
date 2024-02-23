@@ -33,6 +33,10 @@ public class AsteroidManager : MonoBehaviour {
     }
 
     private void Update() {
+        if (Game.instance.gameState != Game.State.Active) {
+            return;
+        }
+
         UpdateAsteroidSpawn();
     }
 
