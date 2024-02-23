@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AsteroidView : MonoBehaviour {
 
-    private Rigidbody mRigidbody = null;
+    private Rigidbody2D mRigidbody = null;
 
     public int size { get; private set; } = 0;
     public int health { get; private set; } = 0;
@@ -14,7 +14,7 @@ public class AsteroidView : MonoBehaviour {
 
     public Vector3 velocity { get { return mRigidbody ? mRigidbody.velocity : Vector3.zero; } }
 
-    private void OnTriggerEnter(Collider other) {
+    private void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.layer == LayerMask.NameToLayer("Bullet")) {
             health -= 10;
 
@@ -34,12 +34,12 @@ public class AsteroidView : MonoBehaviour {
         transform.localScale = Vector3.one * (size + 1) * 0.25f;
 
         if (mRigidbody == null) {
-            mRigidbody = GetComponent<Rigidbody>();
+            mRigidbody = GetComponent<Rigidbody2D>();
         }
 
         mRigidbody.velocity = Vector3.zero;
         mRigidbody.mass = 2 * (size + 1);
-        mRigidbody.AddForce(startingForce, ForceMode.Force);
+        mRigidbody.AddForce(startingForce, ForceMode2D.Force);
     }
 
     private void Destroy() {
