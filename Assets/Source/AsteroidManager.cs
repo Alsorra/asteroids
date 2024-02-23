@@ -81,7 +81,7 @@ public class AsteroidManager : MonoBehaviour {
 
             foreach (float angle in newDirections) {
                 Vector3 direction = CircleEdgePoint(1.0f, angle).normalized * -1.0f;
-                SpawnAsteroid(position, direction, size - 1);
+                SpawnAsteroid(position + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0.0f), direction, size - 1);
             }
         }
     }
