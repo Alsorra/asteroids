@@ -576,6 +576,7 @@ GameObject:
   - component: {fileID: 653899766}
   - component: {fileID: 653899765}
   - component: {fileID: 653899768}
+  - component: {fileID: 653899770}
   - component: {fileID: 653899769}
   m_Layer: 6
   m_Name: Ship
@@ -710,6 +711,19 @@ PolygonCollider2D:
       - {x: -0.2970329, y: -0.22195452}
       - {x: 0.2967649, y: -0.22601312}
   m_UseDelaunayMesh: 0
+--- !u!114 &653899770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 653899763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9996e08a220fb674a827ab7eaf0fb1ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mSpeed: 1.5
 --- !u!1 &1016335944
 GameObject:
   m_ObjectHideFlags: 0
@@ -1085,8 +1099,8 @@ MonoBehaviour:
     type: 3}
   mAsteroidSizeHealth: 190000003200000064000000c8000000
   mAsteroidScoreHealth: 050000003200000064000000f4010000
-  mSpawnRadius: 5
-  mActiveRadius: 6
+  mSpawnRadius: 13
+  mActiveRadius: 15
   mAsteroidSpeed: 0.5
   mSpawnTime: 2.5
 --- !u!4 &1917488047
