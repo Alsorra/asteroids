@@ -350,6 +350,7 @@ MonoBehaviour:
   mPauseMenu: {fileID: 2433817161169951311, guid: e0db8132783521b49b15bad263e99c78,
     type: 3}
   mMenuManager: {fileID: 1246060180}
+  mAsteroidManager: {fileID: 1917488046}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,6 +883,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1385825907}
+  - component: {fileID: 1385825910}
   - component: {fileID: 1385825909}
   - component: {fileID: 1385825908}
   m_Layer: 5
@@ -930,7 +932,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0000000000
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1007,6 +1009,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1385825906}
   m_CullTransparentMesh: 1
+--- !u!114 &1385825910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385825906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f756c9de00ea71143aa8183d0955500a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1888691590
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,6 +1084,7 @@ MonoBehaviour:
   mAsteroidPrefab: {fileID: 148900175869026280, guid: 1e0c08584530d674bb073ae5ed740b41,
     type: 3}
   mAsteroidSizeHealth: 190000003200000064000000c8000000
+  mAsteroidScoreHealth: 050000003200000064000000f4010000
   mSpawnRadius: 5
   mActiveRadius: 6
   mAsteroidSpeed: 0.5
