@@ -18,6 +18,12 @@ public class Game : MonoBehaviour {
     [Header("References")]
     [SerializeField]
     private MenuManager mMenuManager = null;
+    [SerializeField]
+    private AsteroidManager mAsteroidManager = null;
+
+    private int mScore = 0;
+
+    public int score { get { return mScore; } private set { mScore = value; onScoreUpdated.Invoke(mScore); } }
 
     public State gameState { get; private set; } = State.Active;
 
@@ -25,6 +31,7 @@ public class Game : MonoBehaviour {
 
     public BasicEvents.Void onGameStart { get; } = new BasicEvents.Void();
     public BasicEvents.Void onGameEnd { get; } = new BasicEvents.Void();
+    public BasicEvents.Integer onScoreUpdated { get; } = new BasicEvents.Integer();
 
     private void Awake() {
         instance = this;
@@ -33,6 +40,12 @@ public class Game : MonoBehaviour {
             if (health <= 0) {
                 OnGameEnd();
             }
+        });
+    }
+
+    private void Start() {
+        mAsteroidManager.onAsteroidDestroyed.AddListener((int asteroidSize) => {
+            score += mAsteroidManager.GetAsteroidScore(asteroidSize);
         });
     }
 

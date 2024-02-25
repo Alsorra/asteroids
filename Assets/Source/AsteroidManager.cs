@@ -14,6 +14,9 @@ public class AsteroidManager : MonoBehaviour {
     private int[] mAsteroidSizeHealth = new int[] { 25, 50, 100, 200 };
 
     [SerializeField]
+    private int[] mAsteroidScoreHealth = new int[] { 5, 50, 150, 500 };
+
+    [SerializeField]
     private float mSpawnRadius = 10.0f;
 
     [SerializeField]
@@ -27,6 +30,8 @@ public class AsteroidManager : MonoBehaviour {
     private float mSpawnCounter = 0.0f;
 
     private ObjectContainer mAsteroidViews = null;
+
+    public BasicEvents.Integer onAsteroidDestroyed { get; } = new BasicEvents.Integer();
 
     private void Awake() {
         mAsteroidViews = new ObjectContainer(transform, mAsteroidPrefab);
@@ -68,6 +73,8 @@ public class AsteroidManager : MonoBehaviour {
     private void OnAsteroidDestroyed(AsteroidView asteroid, AsteroidView.DestructionType type) {
         mAsteroidViews.SetObjectAvailable(asteroid.gameObject);
 
+        onAsteroidDestroyed.Invoke(asteroid.size);
+
         if (asteroid.size > 0 && type == AsteroidView.DestructionType.OutOfHealth) {
             Vector3 position = asteroid.transform.position;
             Vector3 velocity = asteroid.velocity;
@@ -88,6 +95,11 @@ public class AsteroidManager : MonoBehaviour {
                 SpawnAsteroid(position + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0.0f), direction, size - 1);
             }
         }
+    }
+
+    public int GetAsteroidScore(int size) {
+        Debug.Assert(size >= 0 && size < mAsteroidScoreHealth.Count());
+        return mAsteroidScoreHealth[size];
     }
 
     private void OnDrawGizmos() {
