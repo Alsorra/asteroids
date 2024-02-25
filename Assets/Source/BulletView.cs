@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class BulletView : MonoBehaviour {
 
-    [SerializeField]
-    private float mSpeed = 0.1f;
+    private float mSpeed = 0.0f;
     private float mActiveRadius = 25.0f;
 
     private Vector3 mDirection = Vector3.zero;
@@ -27,10 +26,14 @@ public class BulletView : MonoBehaviour {
         }
     }
 
-    public void Setup(Vector3 worldPosition, Vector3 direction) {
+    public void Setup(Vector3 worldPosition, Vector3 direction, float speed) {
         transform.position = worldPosition;
         mDirection = direction;
-        
+        mSpeed = speed;
+
+        transform.right = direction;
+        transform.Rotate(new Vector3(0.0f, 0.0f, -90.0f));
+
         gameObject.SetActive(true);
     }
 

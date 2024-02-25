@@ -50,7 +50,7 @@ public class AsteroidView : MonoBehaviour {
         mRigidbody.AddForce(startingForce, ForceMode2D.Force);
     }
 
-    private void Destroy(DestructionType type) {
+    public void Destroy(DestructionType type) {
         if (gameObject.activeInHierarchy) {
             gameObject.SetActive(false);
             onDestroyed.Invoke((int)type);

@@ -875,6 +875,7 @@ MonoBehaviour:
   mBulletPrefab: {fileID: 9026928943431088860, guid: bc09597b844fa40418175ad0bb99aa4e,
     type: 3}
   mSpawnPoint: {fileID: 1888691591}
+  mBulletSpeed: 5
 --- !u!4 &1360883883
 Transform:
   m_ObjectHideFlags: 0

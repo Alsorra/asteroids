@@ -12,6 +12,9 @@ public class BulletManager : MonoBehaviour {
     [SerializeField]
     private Transform mSpawnPoint = null;
 
+    [SerializeField]
+    private float mBulletSpeed = 3.0f;
+
     private ObjectContainer mBullets = null;
 
     private void Start() {
@@ -20,7 +23,7 @@ public class BulletManager : MonoBehaviour {
         Game.instance.onGameStart.AddListener(OnGameStart);
     }
 
-    private void Update() {
+    private void FixedUpdate() {
         if (Input.GetMouseButtonDown(0)) {
             BulletView bullet = mBullets.GetAvailableObject().GetComponent<BulletView>();
             bullet.onDestroyed.AddListener(() => {
@@ -30,7 +33,7 @@ public class BulletManager : MonoBehaviour {
             Vector3 position = mSpawnPoint.position;
             Vector3 direction = (mSpawnPoint.position - mSpawnPoint.parent.position).normalized;
 
-            bullet.Setup(position, direction);
+            bullet.Setup(position, direction, mBulletSpeed);
         }
     }
 

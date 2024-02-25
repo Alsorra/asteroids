@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +7,11 @@ public class ObjectContainer {
 
     private List<GameObject> mAvailableObject = new List<GameObject>();
     private List<GameObject> mLockedObjects = new List<GameObject>();
+
+    public int lockedCount { get { return mLockedObjects.Count; } }
+
+    public GameObject[] availableObjects { get { return mAvailableObject.ToArray(); } }
+    public GameObject[] lockedObjects { get { return mLockedObjects.ToArray(); } }
 
     public ObjectContainer(Transform parent, GameObject prefab) {
         mParent = parent;

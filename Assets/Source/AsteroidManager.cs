@@ -17,6 +17,12 @@ public class AsteroidManager : MonoBehaviour {
     private int[] mAsteroidScoreHealth = new int[] { 5, 50, 150, 500 };
 
     [SerializeField]
+    private int mMinAsteroids = 10;
+
+    [SerializeField]
+    private int mMaxAsteroids = 100;
+
+    [SerializeField]
     private float mSpawnRadius = 10.0f;
 
     [SerializeField]
@@ -39,17 +45,29 @@ public class AsteroidManager : MonoBehaviour {
         Game.instance.onGameStart.AddListener(OnGameStart);
     }
 
-    private void Update() {
-        if (Game.instance.gameState != Game.State.Active) {
-            return;
-        }
-
+    private void FixedUpdate() {
         UpdateAsteroidSpawn();
+
+        CheckActiveArea();
+    }
+
+    private void CheckActiveArea() {
+        GameObject[] asteroids = mAsteroidViews.lockedObjects;
+        foreach (var asteroid in asteroids) {
+            if (Vector3.Distance(Vector3.zero, asteroid.transform.position) > mActiveRadius) {
+                asteroid.GetComponent<AsteroidView>().Destroy(AsteroidView.DestructionType.OutOfBounds);
+            }
+        }
     }
 
     private void UpdateAsteroidSpawn() {
-        mSpawnCounter += Time.deltaTime;
-        if (mSpawnCounter >= mSpawnTime) {
+        int asteroidsCount = mAsteroidViews.lockedCount;
+        if (asteroidsCount >= mMaxAsteroids) {
+            return;
+        }
+
+        mSpawnCounter += Time.fixedDeltaTime;
+        if (mSpawnCounter >= mSpawnTime || asteroidsCount < mMinAsteroids) {
             mSpawnCounter = 0.0f;
 
             float angle = Random.Range(0.0f, Mathf.PI * 2.0f);
