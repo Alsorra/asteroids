@@ -8,7 +8,9 @@ public class MenuManager : MonoBehaviour {
     [SerializeField]
     private GameObject mPlayAreaPanel = null;
 
-    public bool menuOpen { get; private set; } = false;
+    private Menu mCurrentMenu = null;
+
+    public bool menuOpen { get { return mCurrentMenu != null; } }
 
     public bool TryOpenMenu(GameObject menuPrefab, out Menu menu) {
         menu = null;
@@ -18,23 +20,31 @@ public class MenuManager : MonoBehaviour {
         }
 
         GameObject menuObject = GameObject.Instantiate(menuPrefab, transform);
-        if (menuObject.TryGetComponent<Menu>(out menu)) {
-            menuOpen = true;
-
+        if (menuObject.TryGetComponent<Menu>(out mCurrentMenu)) {
             mPlayAreaPanel.SetActive(true);
 
-            menu.onMenuClosed.AddListener(() => {
-                menuOpen = false;
+            mCurrentMenu.onMenuClosed.AddListener(() => {
+                mCurrentMenu = null;
 
                 mPlayAreaPanel.SetActive(false);
 
                 GameObject.Destroy(menuObject);
             });
 
+            menu = mCurrentMenu;
+
             return true;
         }
 
         GameObject.Destroy(menuObject);
         return false;
+    }
+
+    public void CloseCurrentMenu() {
+        if (!menuOpen) {
+            return;
+        }
+
+        mCurrentMenu.Close();
     }
 }

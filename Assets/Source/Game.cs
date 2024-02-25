@@ -37,10 +37,25 @@ public class Game : MonoBehaviour {
     }
 
     private void Update() {
-        if (gameState == State.Active && Input.GetKeyDown(KeyCode.P)) {
+        UpdatePauseCheck();
+    }
+
+    private void OnGameEnd() {
+        gameState = State.EndGame;
+
+        onGameEnd.Invoke();
+    }
+
+    private void UpdatePauseCheck() {
+        bool pauseInput = Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P);
+        if (pauseInput && gameState == State.Active) {
             if (mMenuManager.TryOpenMenu(mPauseMenu, out Menu menu)) {
                 menu.GetButton("Continue").onClick.AddListener(() => {
                     menu.Close();
+                });
+
+                menu.GetButton("Quit").onClick.AddListener(() => {
+                    Application.Quit();
                 });
 
                 menu.onMenuClosed.AddListener(() => {
@@ -51,12 +66,8 @@ public class Game : MonoBehaviour {
                 gameState = State.Paused;
                 Time.timeScale = 0.0f;
             }
+        } else if (pauseInput && gameState == State.Paused) {
+            mMenuManager.CloseCurrentMenu();
         }
-    }
-
-    private void OnGameEnd() {
-        gameState = State.EndGame;
-
-        onGameEnd.Invoke();
     }
 }
