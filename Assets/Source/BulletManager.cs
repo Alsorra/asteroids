@@ -14,8 +14,10 @@ public class BulletManager : MonoBehaviour {
 
     private ObjectContainer mBullets = null;
 
-    private void Awake() {
-        mBullets = new ObjectContainer(transform, mBulletPrefab);
+    private void Start() {
+        OnGameStart();
+
+        Game.instance.onGameStart.AddListener(OnGameStart);
     }
 
     private void Update() {
@@ -29,6 +31,16 @@ public class BulletManager : MonoBehaviour {
             Vector3 direction = (mSpawnPoint.position - mSpawnPoint.parent.position).normalized;
 
             bullet.Setup(position, direction);
+        }
+    }
+
+    private void OnGameStart() {
+        mBullets = new ObjectContainer(transform, mBulletPrefab);
+
+        while (transform.childCount > 0) {
+            GameObject child = transform.GetChild(0).gameObject;
+            child.transform.SetParent(null);
+            GameObject.Destroy(child);
         }
     }
 }

@@ -33,8 +33,10 @@ public class AsteroidManager : MonoBehaviour {
 
     public BasicEvents.Integer onAsteroidDestroyed { get; } = new BasicEvents.Integer();
 
-    private void Awake() {
-        mAsteroidViews = new ObjectContainer(transform, mAsteroidPrefab);
+    private void Start() {
+        OnGameStart();
+
+        Game.instance.onGameStart.AddListener(OnGameStart);
     }
 
     private void Update() {
@@ -56,6 +58,18 @@ public class AsteroidManager : MonoBehaviour {
             int randomSize = Random.Range(0, mAsteroidSizeHealth.Count());
 
             SpawnAsteroid(spawnPosition, direction, randomSize);
+        }
+    }
+
+    private void OnGameStart() {
+        mSpawnCounter = 0.0f;
+
+        mAsteroidViews = new ObjectContainer(transform, mAsteroidPrefab);
+
+        while (transform.childCount > 0) {
+            GameObject child = transform.GetChild(0).gameObject;
+            child.transform.SetParent(null);
+            GameObject.Destroy(child);
         }
     }
 

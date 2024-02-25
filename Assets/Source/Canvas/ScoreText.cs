@@ -9,6 +9,6 @@ public class ScoreText : MonoBehaviour {
             text.text = score.ToString();
         });
 
-        text.text = "0";
+        text.text = Game.instance.score.ToString();
     }
 }

@@ -21,4 +21,8 @@ public class Ship {
             health -= 10;
         }
     }
+
+    public void Restart() {
+        health = MaxHealth;
+    }
 }

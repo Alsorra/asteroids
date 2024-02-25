@@ -347,7 +347,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c408715c98255214ebf17b71e318b679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mPauseMenu: {fileID: 2433817161169951311, guid: e0db8132783521b49b15bad263e99c78,
+  mPauseMenuPrefab: {fileID: 2433817161169951311, guid: e0db8132783521b49b15bad263e99c78,
+    type: 3}
+  mGameEndMenuPrefab: {fileID: 5015434200463828750, guid: 7e08060dd8c25964bb987a80a8ea47ca,
     type: 3}
   mMenuManager: {fileID: 1246060180}
   mAsteroidManager: {fileID: 1917488046}

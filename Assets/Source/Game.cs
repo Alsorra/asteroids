@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game : MonoBehaviour {
@@ -13,7 +14,9 @@ public class Game : MonoBehaviour {
 
     [Header("Resources")]
     [SerializeField]
-    private GameObject mPauseMenu = null;
+    private GameObject mPauseMenuPrefab = null;
+    [SerializeField]
+    private GameObject mGameEndMenuPrefab = null;
 
     [Header("References")]
     [SerializeField]
@@ -53,16 +56,10 @@ public class Game : MonoBehaviour {
         UpdatePauseCheck();
     }
 
-    private void OnGameEnd() {
-        gameState = State.EndGame;
-
-        onGameEnd.Invoke();
-    }
-
     private void UpdatePauseCheck() {
         bool pauseInput = Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P);
         if (pauseInput && gameState == State.Active) {
-            if (mMenuManager.TryOpenMenu(mPauseMenu, out Menu menu)) {
+            if (mMenuManager.TryOpenMenu(mPauseMenuPrefab, out Menu menu)) {
                 menu.GetButton("Continue").onClick.AddListener(() => {
                     menu.Close();
                 });
@@ -82,5 +79,29 @@ public class Game : MonoBehaviour {
         } else if (pauseInput && gameState == State.Paused) {
             mMenuManager.CloseCurrentMenu();
         }
+    }
+
+    private void OnGameEnd() {
+        gameState = State.EndGame;
+        Time.timeScale = 0.0f;
+
+        onGameEnd.Invoke();
+
+        if (mMenuManager.TryOpenMenu(mGameEndMenuPrefab, out Menu menu)) {
+            menu.GetButton("Restart").onClick.AddListener(Restart);
+        }
+    }
+
+    private void Restart() {
+        mMenuManager.CloseCurrentMenu();
+
+        gameState = State.Active;
+        Time.timeScale = 1.0f;
+
+        score = 0;
+
+        ship.Restart();
+
+        onGameStart.Invoke();
     }
 }
