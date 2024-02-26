@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class AsteroidManager : MonoBehaviour {
@@ -80,7 +77,7 @@ public class AsteroidManager : MonoBehaviour {
                 Random.Range(-mSpawnDirectionVariation, mSpawnDirectionVariation), 
                 Random.Range(-mSpawnDirectionVariation, mSpawnDirectionVariation),
                 spawnPosition.z)).normalized * -1.0f;
-            int randomSize = Random.Range(0, mAsteroidSizeHealth.Count());
+            int randomSize = Random.Range(0, mAsteroidSizeHealth.Length);
 
             SpawnAsteroid(spawnPosition, direction, randomSize);
         }
@@ -135,7 +132,7 @@ public class AsteroidManager : MonoBehaviour {
     }
 
     public int GetAsteroidScore(int size) {
-        Debug.Assert(size >= 0 && size < mAsteroidScoreHealth.Count());
+        Debug.Assert(size >= 0 && size < mAsteroidScoreHealth.Length);
         return mAsteroidScoreHealth[size];
     }
 
