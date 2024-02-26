@@ -15,6 +15,10 @@ public class BulletManager : MonoBehaviour {
     [SerializeField]
     private float mBulletSpeed = 3.0f;
 
+    [SerializeField]
+    private float mBulletSpawnTime = 0.25f;
+    private float mBulletSpawnCounter = 1.0f;
+
     private ObjectContainer mBullets = null;
 
     private void Start() {
@@ -24,7 +28,11 @@ public class BulletManager : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if (Input.GetMouseButtonDown(0)) {
+        mBulletSpawnCounter -= Time.fixedDeltaTime;
+
+        if (Input.GetMouseButton(0) && mBulletSpawnCounter <= 0.0f) {
+            mBulletSpawnCounter = mBulletSpawnTime;
+
             BulletView bullet = mBullets.GetAvailableObject().GetComponent<BulletView>();
             bullet.onDestroyed.AddListener(() => {
                 mBullets.SetObjectAvailable(bullet.gameObject);
@@ -34,6 +42,8 @@ public class BulletManager : MonoBehaviour {
             Vector3 direction = (mSpawnPoint.position - mSpawnPoint.parent.position).normalized;
 
             bullet.Setup(position, direction, mBulletSpeed);
+        } else if (!Input.GetMouseButton(0)) {
+            mBulletSpawnCounter = 0.0f;
         }
     }
 

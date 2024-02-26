@@ -14,7 +14,7 @@ public class AsteroidManager : MonoBehaviour {
     private int[] mAsteroidSizeHealth = new int[] { 25, 50, 100, 200 };
 
     [SerializeField]
-    private int[] mAsteroidScoreHealth = new int[] { 5, 50, 150, 500 };
+    private int[] mAsteroidScoreHealth = new int[] { 10, 50, 150, 500 };
 
     [SerializeField]
     private int mMinAsteroids = 10;
@@ -23,21 +23,25 @@ public class AsteroidManager : MonoBehaviour {
     private int mMaxAsteroids = 100;
 
     [SerializeField]
-    private float mSpawnRadius = 10.0f;
-
-    [SerializeField]
     private float mActiveRadius = 15.0f;
 
     [SerializeField]
     private float mAsteroidSpeed = 11.0f;
 
+    [Header("Spawn Data")]
+    [SerializeField]
+    private float mSpawnRadius = 10.0f;
+
     [SerializeField]
     private float mSpawnTime = 5.0f;
     private float mSpawnCounter = 0.0f;
 
+    [SerializeField]
+    private float mSpawnDirectionVariation = 1.0f;
+
     private ObjectContainer mAsteroidViews = null;
 
-    public BasicEvents.Integer onAsteroidDestroyed { get; } = new BasicEvents.Integer();
+    public AsteroidView.DestroyedEvent onAsteroidDestroyed { get; } = new AsteroidView.DestroyedEvent();
 
     private void Start() {
         OnGameStart();
@@ -72,7 +76,10 @@ public class AsteroidManager : MonoBehaviour {
 
             float angle = Random.Range(0.0f, Mathf.PI * 2.0f);
             Vector3 spawnPosition = CircleEdgePoint(mSpawnRadius, angle);
-            Vector3 direction = spawnPosition.normalized * -1.0f;
+            Vector3 direction = (spawnPosition - new Vector3(
+                Random.Range(-mSpawnDirectionVariation, mSpawnDirectionVariation), 
+                Random.Range(-mSpawnDirectionVariation, mSpawnDirectionVariation),
+                spawnPosition.z)).normalized * -1.0f;
             int randomSize = Random.Range(0, mAsteroidSizeHealth.Count());
 
             SpawnAsteroid(spawnPosition, direction, randomSize);
@@ -92,41 +99,39 @@ public class AsteroidManager : MonoBehaviour {
     }
 
     private void SpawnAsteroid(Vector3 spawnPosition, Vector3 direction, int size) {
-        float speed = mAsteroidSpeed * (mAsteroidSpeed / (size + 1));
-
         AsteroidView asteroidView = mAsteroidViews.GetAvailableObject().GetComponent<AsteroidView>();
-        asteroidView.Setup(spawnPosition, direction * 100.0f, size, mAsteroidSizeHealth[size]);
+        asteroidView.Setup(spawnPosition, direction * mAsteroidSpeed, size, mAsteroidSizeHealth[size]);
 
-        asteroidView.onDestroyed.AddListener((int destructionType) => {
-            OnAsteroidDestroyed(asteroidView, (AsteroidView.DestructionType)destructionType);
+        asteroidView.onDestroyed.AddListener((AsteroidView.DestructionType destructionType, int size) => {
+            OnAsteroidDestroyed(asteroidView, destructionType);
         });
     }
 
-    private void OnAsteroidDestroyed(AsteroidView asteroid, AsteroidView.DestructionType type) {
-        mAsteroidViews.SetObjectAvailable(asteroid.gameObject);
+    private void OnAsteroidDestroyed(AsteroidView asteroid, AsteroidView.DestructionType destructionType) {
+        onAsteroidDestroyed.Invoke(destructionType, asteroid.size);
 
-        onAsteroidDestroyed.Invoke(asteroid.size);
-
-        if (asteroid.size > 0 && type == AsteroidView.DestructionType.OutOfHealth) {
+        if (asteroid.size > 0 && destructionType == AsteroidView.DestructionType.OutOfHealth) {
             Vector3 position = asteroid.transform.position;
-            Vector3 velocity = asteroid.velocity;
+            float scale = asteroid.transform.localScale.x * 0.25f;
             int size = asteroid.size;
 
-            asteroid = null;
-
-            float directionAngle = Mathf.Acos(-velocity.x);
-            float directionAngleDifference = Mathf.Deg2Rad * 25.0f;
-
-            float[] newDirections = new float[] {
-                directionAngle + directionAngleDifference,
-                directionAngle - directionAngleDifference
+            Vector3[] newDirections = new Vector3[] {
+                new Vector3(
+                    Random.Range(-1.0f, 1.0f),
+                    Random.Range(-1.0f, 1.0f),
+                    0.0f).normalized,
+                new Vector3(
+                    Random.Range(-1.0f, 1.0f),
+                    Random.Range(-1.0f, 1.0f),
+                    0.0f).normalized
             };
 
-            foreach (float angle in newDirections) {
-                Vector3 direction = CircleEdgePoint(1.0f, angle).normalized * -1.0f;
-                SpawnAsteroid(position + new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0.0f), direction, size - 1);
+            foreach (Vector3 direction in newDirections) {
+                SpawnAsteroid(position + (direction * scale), direction, size - 1);
             }
         }
+
+        mAsteroidViews.SetObjectAvailable(asteroid.gameObject);
     }
 
     public int GetAsteroidScore(int size) {

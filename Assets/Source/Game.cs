@@ -47,8 +47,12 @@ public class Game : MonoBehaviour {
     }
 
     private void Start() {
-        mAsteroidManager.onAsteroidDestroyed.AddListener((int asteroidSize) => {
-            score += mAsteroidManager.GetAsteroidScore(asteroidSize);
+        mAsteroidManager.onAsteroidDestroyed.AddListener((AsteroidView.DestructionType type, int asteroidSize) => {
+            if (type == AsteroidView.DestructionType.OutOfHealth) {
+                score += mAsteroidManager.GetAsteroidScore(asteroidSize);
+            } else if (type == AsteroidView.DestructionType.HitShip) {
+                score += mAsteroidManager.GetAsteroidScore(asteroidSize) / 2;
+            }
         });
     }
 

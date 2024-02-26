@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,12 +12,14 @@ public class AsteroidView : MonoBehaviour {
         OutOfHealth = 2
     }
 
+    public class DestroyedEvent : UnityEvent<DestructionType, int> { }
+
     private Rigidbody2D mRigidbody = null;
 
     public int size { get; private set; } = 0;
     public int health { get; private set; } = 0;
 
-    public BasicEvents.Integer onDestroyed { get; } = new BasicEvents.Integer();
+    public DestroyedEvent onDestroyed { get; private set; } = new DestroyedEvent();
 
     public Vector3 velocity { get { return mRigidbody ? mRigidbody.velocity : Vector3.zero; } }
 
@@ -46,16 +49,16 @@ public class AsteroidView : MonoBehaviour {
         }
 
         mRigidbody.velocity = Vector3.zero;
-        mRigidbody.mass = 2 * (size + 1);
+        mRigidbody.mass = 5 * (size + 1);
         mRigidbody.AddForce(startingForce, ForceMode2D.Force);
     }
 
     public void Destroy(DestructionType type) {
         if (gameObject.activeInHierarchy) {
-            gameObject.SetActive(false);
-            onDestroyed.Invoke((int)type);
-
+            onDestroyed.Invoke(type, size);
             onDestroyed.RemoveAllListeners();
+
+            gameObject.SetActive(false);
         }
     }
 }
